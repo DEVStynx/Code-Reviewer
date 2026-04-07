@@ -1,0 +1,41 @@
+div.code-review-center {
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#drop-area {
+    border: 2px dashed #007bff;
+    border-radius: 20px;
+    padding: 20px;
+    transition: background-color 0.2s, border-color 0.2s;
+    position: relative;
+}
+
+#drop-area.dragover {
+    background-color: rgba(0, 123, 255, 0.1);
+    border-color: #0056b3;
+}
+
+#drag-drop-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+textarea.code-input-text {
+    width: 100%;
+    font-family: monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+button.submit-btn {
+    width: 20%;
+}
+
+i.bi-send {
+    margin-right: 5%;
+}
