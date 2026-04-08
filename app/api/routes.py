@@ -12,4 +12,4 @@ def index():
 
 @api_bp.route("/review", methods=["POST"])
 def review():
-    return review_code()
+    return review_code(files=request.files, code=request.form.get("code", None))
