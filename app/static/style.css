@@ -39,3 +39,82 @@ button.submit-btn {
 i.bi-send {
     margin-right: 5%;
 }
+
+.review-card {
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    background-color: #1f1f1f;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+.review-card-header {
+    background-color: #2a2a2a;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #f8f9fa;
+}
+
+.review-card-body {
+    padding: 1rem 1.5rem;
+}
+
+/* Code in Textarea */
+.code-block-textarea {
+    width: 100%;
+    height: 250px;
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+    font-family: monospace;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #3a3a3a;
+    padding: 0.75rem;
+    resize: vertical;
+    overflow: auto;
+}
+
+/* Findings */
+.finding-card {
+    margin-bottom: 1rem;
+    border-left: 5px solid;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    background-color: #2b2b2b;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.finding-card:hover {
+    transform: translateX(3px);
+    background-color: #333333;
+}
+
+/* Severity colors */
+.finding-critical { border-color: #dc3545; }  /* rot */
+.finding-major { border-color: #ffc107; }     /* gelb */
+.finding-minor { border-color: #6c757d; }     /* grau */
+
+.finding-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #ffffff;
+}
+
+.finding-subtitle {
+    font-size: 0.85rem;
+    color: #adb5bd;
+}
+
+.finding-text {
+    margin-top: 0.25rem;
+    color: #e9ecef;
+}
+
+/* Stylistic suggestions */
+.style-section {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #495057;
+    font-style: italic;
+    color: #ced4da;
+}

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title%}
+Review
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    {% for file in files %}
+    <div class="review-card">
+        <div class="review-card-header">{{ file["file"] }}</div>
+        <div class="review-card-body">
+            <textarea class="code-block-textarea" readonly>{{ file["content"] }}</textarea>
+
+            {% for finding in file["reviews"]["findings"] %}
+            <div class="finding-card finding-{{ finding["severity"] }}">
+            <div class="finding-title">{{ finding["issue"] }} #{{ finding["line"] }}</div>
+            <div class="finding-subtitle">{{ finding["severity"] | capitalize }}</div>
+            <div class="finding-text">{{ finding["suggestion"] }}</div>
+        </div>
+        {% endfor %}
+
+        {% if file["reviews"]["style"] %}
+        <div class="style-section">
+            <strong>Stylistic suggestions:</strong>
+            {% for style in file["reviews"]["style"] %}
+            <div class="finding-card finding-minor">
+                <div class="finding-title">{{ style["issue"] }} #{{ style["line"] }}</div>
+                <div class="finding-text">{{ style["suggestion"] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
