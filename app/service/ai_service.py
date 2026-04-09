@@ -1,8 +1,9 @@
 from openai import OpenAI
-from flask import Flask
+from flask import Flask, jsonify
 from werkzeug.utils import secure_filename
 from app.util.OpenAIUtil import isvalidAPIKey
 from json import dumps
+
 openai_client: OpenAI
 MODEL: str
 
@@ -14,19 +15,22 @@ def setupOpenAIAPI(app: Flask):
     with app.app_context():
         key = app.config.get("OPENAI_API_KEY", None)
         base_url = app.config.get("OPENAI_BASE_URL", None)
-        MODEL = app.config.get("OPENAI_API_MODEL", "gpt-3.1-mini")
+        MODEL = app.config.get("OPENAI_API_MODEL") or "gpt-3.1-mini"
     if not isvalidAPIKey(key):
-        raise KeyError("Invalid OpenAI API key, check your .env file!")
+        raise ValueError("Invalid OpenAI API key, check your .env file!")
     openai_client = OpenAI(api_key=key, base_url=base_url)
 
     # Check if api key is valid
     try:
         openai_client.models.list()
     except Exception as e:
-        raise ConnectionError("Invalid OpenAI API Key, check if your key is still valid!")
+        raise ConnectionError("Invalid OpenAI API Key, check if your key is still valid!") from e
 
 
 def createResponse(diff):
+    # Check if OpenAIAPI is setup already
+    if not openai_client:
+        raise ConnectionError("The OpenAI client isn't setup yet!")
     request = [
         {
             "role": "system",
@@ -62,7 +66,12 @@ def preprocess_files(files) -> list:
 
         # Correct filename for safety reasons
         name = secure_filename(file.filename)
-        content = file.read().decode('utf-8')
+
+        # If decoding fails, skip file (e.g. binary files, ...)
+        try:
+            content = file.read().decode('utf-8')
+        except UnicodeError as e:
+            continue
         processed_files.append(
             {
                 "name": name,
@@ -75,7 +84,7 @@ def preprocess_files(files) -> list:
 
 def review_code(files=None, code=None):
     data = list()
-    if "file" in files:
+    if files and "file" in files:
         data = preprocess_files(files.getlist("file"))
     if code and not code == "":
         data.append(
@@ -86,4 +95,4 @@ def review_code(files=None, code=None):
         )
 
     review = createResponse(dumps(data))
-    return str(review)
+    return jsonify(review.output_text)
