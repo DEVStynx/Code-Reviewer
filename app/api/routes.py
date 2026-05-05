@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template
 from app.service.ai_service import review_code, review_code_frontend
-
+import logging
 index_bp = Blueprint("index", __name__, url_prefix="")
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
