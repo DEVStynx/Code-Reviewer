@@ -4,19 +4,23 @@ from flask import Flask, jsonify
 from werkzeug.utils import secure_filename
 from app.util.OpenAIUtil import isvalidAPIKey
 from json import dumps, loads
+import logging
 
 openai_client: OpenAI
 MODEL: str
+MASTER_PROMPT : dict
 
 
 def setupOpenAIAPI(app: Flask):
     global openai_client
     global MODEL
+    global MASTER_PROMPT
 
     with app.app_context():
         key = app.config.get("OPENAI_API_KEY", None)
         base_url = app.config.get("OPENAI_BASE_URL", None)
         MODEL = app.config.get("OPENAI_API_MODEL") or "gpt-3.1-mini"
+        MASTER_PROMPT = app.config.get("MASTER_PROMPT")
     if not isvalidAPIKey(key):
         raise ValueError("Invalid OpenAI API key, check your .env file!")
     openai_client = OpenAI(api_key=key, base_url=base_url)
@@ -33,51 +37,7 @@ def createResponse(diff):
     if not openai_client:
         raise ConnectionError("The OpenAI client isn't setup yet!")
     request = [
-        {
-            "role": "system",
-            "content": """
-                You are a strict senior code reviewer.
-                
-                Analyze the provided code or diff and return ONLY valid JSON.
-                
-                The JSON must follow this exact structure:
-                
-                {
-                  "files": [
-                    {
-                      "file": "string",
-                      "findings": [
-                        {
-                          "severity": "critical | major | minor",
-                          "line": number,
-                          "issue": "string",
-                          "suggestion": "string"
-                        }
-                      ],
-                      "style": [
-                        {
-                          "line": number,
-                          "issue": "string",
-                          "suggestion": "string"
-                        }
-                      ]
-                    }
-                  ]
-                }
-                
-                Rules:
-                - Return ONLY JSON, no explanations, no markdown.
-                - Group all findings by file.
-                - Do not repeat the file field inside findings or style.
-                - "line" must be a number.
-                - "findings" must contain only critical, major, or minor issues.
-                - "style" must contain only non-critical style suggestions.
-                - If a file has no findings or no style issues, return an empty array for that field.
-                - If no issues at all are found, return: {"files": []}
-                - Ensure valid JSON (double quotes, no trailing commas).
-                - All files must stay in the same order, as provided.
-            """
-        },
+        MASTER_PROMPT,
         {
             "role": "user",
             "content": diff
@@ -143,10 +103,12 @@ def review_code_frontend(files=None, code=None):
     # Prepare files
     data = []
     if files and "file" in files:
+        logging.debug("file obj existing")
         data = preprocess_files(files.getlist("file"))
 
     # Add code if directly via text
     if code:
+        logging.debug("manual code is existing")
         data.append({"name": "direct_code", "content": code})
 
     # review code
