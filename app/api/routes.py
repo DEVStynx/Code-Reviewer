@@ -12,7 +12,7 @@ def index():
 
 @index_bp.route("/review", methods=["POST"])
 def review():
-    files = review_code_frontend(files=request.files, code=request.form.get("code", None))
+    files = review_code_frontend(files=request.files.getlist("files"), code=request.form.get("code", None))
     return render_template("review.html", files=files)
 
 

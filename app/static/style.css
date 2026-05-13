@@ -118,3 +118,11 @@ i.bi-send {
     font-style: italic;
     color: #ced4da;
 }
+div.upload-icon {
+    height: 10%;
+    width: 5%;
+}
+
+div.upload-icon:hover {
+    cursor: pointer;
+}

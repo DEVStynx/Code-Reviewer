@@ -22,12 +22,19 @@ Home
                     <i class="bi bi-upload display-1 text-primary"></i>
                 </div>
 
-                <input type="file" id="input-file" multiple class="d-none">
+                <input type="file" id="input-file" multiple class="d-none" name="files"> 
             </div>
+            
             <div class="text-center">
-                <button type="submit" class="btn btn-primary submit-btn"><i class="bi bi-send"></i>Send</button>
+                <button type="submit" class="btn btn-primary submit-btn" id="submit-btn"><i class="bi bi-send"></i>Send</button>
             </div>
         </form>
+        <div class="upload-icon" id="upload-icon">
+            <i class="bi bi-upload"></i> 
+        </div>
+        <div id="file-view">
+
+        </div>
     </div>
 </div>
 {% endblock %}
