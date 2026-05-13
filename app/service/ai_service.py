@@ -1,6 +1,7 @@
 import openai
 from openai import OpenAI, RateLimitError
 from flask import Flask, jsonify
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from app.util.OpenAIUtil import isvalidAPIKey
 from json import dumps, loads
@@ -102,9 +103,8 @@ def review_code(files=None, code=None, api=True):
 def review_code_frontend(files=None, code=None):
     # Prepare files
     data = []
-    if files and "file" in files:
-        logging.debug("file obj existing")
-        data = preprocess_files(files.getlist("file"))
+    if files:
+        data = preprocess_files(files)
 
     # Add code if directly via text
     if code:
