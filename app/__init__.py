@@ -1,7 +1,9 @@
 from flask import Flask
 from app.service.ai_service import setupOpenAIAPI
+from app.database.db import db
+from flask_migrate import Migrate
 
-
+migrate = Migrate()
 def create_app():
     app = Flask(__name__)
 
@@ -13,4 +15,8 @@ def create_app():
     app.register_blueprint(index_bp)
     app.register_blueprint(api_bp)
 
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    from app import models
     return app

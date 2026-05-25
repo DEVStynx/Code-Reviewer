@@ -1,8 +1,28 @@
 from flask import Blueprint, request, render_template
 from app.service.ai_service import review_code, review_code_frontend
-import logging
+
 index_bp = Blueprint("index", __name__, url_prefix="")
 api_bp = Blueprint("api", __name__, url_prefix="/api")
+
+
+@index_bp.route("/login", methods=["GET"])
+def login_site():
+    return render_template("login.html")
+
+
+@index_bp.route("/login", methods=["POST"])
+def login():
+    pass
+
+
+@index_bp.route("/register", methods=["GET"])
+def register_site():
+    return render_template("register.html")
+
+
+@index_bp.route("/register", methods=["POST"])
+def register():
+    pass
 
 
 @index_bp.route("/", methods=["GET"])

@@ -11,6 +11,10 @@ class Config:
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY","")
     OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
     OPENAI_API_MODEL = os.environ.get("OPENAI_API_MODEL", "gpt-3.1-mini")
+
+    SQLALCHEMY_DATABASE_URI = "sqlite:///reviewer.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     MASTER_PROMPT = {
             "role": "system",
             "content": """

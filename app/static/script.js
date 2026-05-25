@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
             reader.onload = function (event) {
                 dropArea.querySelector("textarea").value = event.target.result;
             };
-            reader.readAsText(file);
+            reader.readAsText(files[0]);
             return;
         }
         
