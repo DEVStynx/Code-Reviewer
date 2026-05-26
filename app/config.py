@@ -11,6 +11,19 @@ class Config:
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY","")
     OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
     OPENAI_API_MODEL = os.environ.get("OPENAI_API_MODEL", "gpt-3.1-mini")
+
+    SQLALCHEMY_DATABASE_URI = "sqlite:///reviewer.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    JWT_SECRET_KEY = "123456"
+    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_COOKIE_SECURE = False # True in production (HTTPS)
+    JWT_COOKIE_HTTPONLY = True
+    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_SAMESITE = "Lax"
+
+    SECRET_KEY = "your-very-long-secret-key" # For Sessions
+
     MASTER_PROMPT = {
             "role": "system",
             "content": """
