@@ -35,6 +35,13 @@ Register
                     <a href="/login" class="text-muted mt-2">Already have an account? Log in</a>
                 </div>
             </form>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            <div class="error-message">
+                {% for category, message in messages %} 
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endwith %}
         </div>
     </div>
 </div>

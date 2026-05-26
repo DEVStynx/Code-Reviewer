@@ -15,6 +15,15 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "sqlite:///reviewer.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    JWT_SECRET_KEY = "123456"
+    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_COOKIE_SECURE = False # True in production (HTTPS)
+    JWT_COOKIE_HTTPONLY = True
+    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_SAMESITE = "Lax"
+
+    SECRET_KEY = "your-very-long-secret-key" # For Sessions
+
     MASTER_PROMPT = {
             "role": "system",
             "content": """
