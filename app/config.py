@@ -8,13 +8,20 @@ load_dotenv(dotenv_path=os.path.join(BASE_DIR, ".env"))
 class Config:
     DEBUG = True
 
+    # .env Variables
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY","")
     OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
     OPENAI_API_MODEL = os.environ.get("OPENAI_API_MODEL", "gpt-3.1-mini")
 
+    # Upload Configuration
+    MAX_FILE_SIZE_BYTES = 250_000
+    MAX_FILE_CHARS = 50_000
+
+    # Database
     SQLALCHEMY_DATABASE_URI = "sqlite:///reviewer.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # JWT Configuration
     JWT_SECRET_KEY = "123456"
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_COOKIE_SECURE = False # True in production (HTTPS)
@@ -22,8 +29,10 @@ class Config:
     JWT_COOKIE_CSRF_PROTECT = False
     JWT_COOKIE_SAMESITE = "Lax"
 
+    # Session Configuration
     SECRET_KEY = "your-very-long-secret-key" # For Sessions
 
+    # PROMPT Configuration
     MASTER_PROMPT = {
             "role": "system",
             "content": """
@@ -67,6 +76,7 @@ class Config:
                 - If no issues at all are found, return: {"files": []}
                 - Ensure valid JSON (double quotes, no trailing commas).
                 - All files must stay in the same order, as provided.
+                - Every finding has to be assigned to the right file, DON'T name every finding to the first file
             """
         }
     

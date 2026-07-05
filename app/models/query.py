@@ -19,6 +19,11 @@ class Query(db.Model):
         nullable=False
     )
 
+    review_json = db.Column(
+        db.JSON,
+        nullable=False
+    )
+
     user = db.relationship(
         "User",
         backref="queries"
