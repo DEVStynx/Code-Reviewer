@@ -1,2 +1,4 @@
-from app.models.user import User
-from app.models.query import Query
+"""Model package for SQLAlchemy models.
+
+Keep this file import-light to avoid circular imports during Flask startup.
+"""

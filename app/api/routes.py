@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_current_user, verify_jwt_in_req
 
 from app.service.user_service import register_user, login_user
 from app.service.ai_service import review_code, review_code_frontend
-
+from app.service.query_service import get_reviews
 index_bp = Blueprint("index", __name__, url_prefix="")
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -15,9 +15,10 @@ def login_site():
 
 @index_bp.route("/login", methods=["POST"])
 def login():
-    username = request.form.get("username", None)
-    password = request.form.get("password", None)
-    return login_user(username=username, password=password)
+    return login_user(
+        username=request.form.get("username", None),
+        password=request.form.get("password", None),
+    )
 
 
 @index_bp.route("/register", methods=["GET"])
@@ -27,9 +28,10 @@ def register_site():
 
 @index_bp.route("/register", methods=["POST"])
 def register():
-    username = request.form.get("username", " ")
-    password = request.form.get("password", " ")
-    return register_user(username=username, password=password)
+    return register_user(
+        username=request.form.get("username", " "),
+        password=request.form.get("password", " "),
+    )
 
 
 @index_bp.route("/", methods=["GET"])
@@ -44,14 +46,19 @@ def index():
 @index_bp.route("/review", methods=["POST"])
 @jwt_required(locations=["cookies"])
 def review():
-    files = review_code_frontend(files=request.files.getlist("files"), code=request.form.get("code", None))
+    files = review_code_frontend(files=request.files, code=request.form.get("code"))
     return render_template("review.html", files=files)
+
+@index_bp.route("/queries", methods=["GET"])
+@jwt_required(locations=["cookies"])
+def queries():
+    return get_reviews()
 
 
 @api_bp.route("/review", methods=["POST"])
 @jwt_required()
 def api_review():
-    return review_code(files=request.files, code=request.form.get("code", None))
+    return review_code(files=request.files, code=request.form.get("code"))
 
 
 @api_bp.route("/me")
@@ -60,5 +67,5 @@ def test_thing():
     user = get_current_user()
     return {
         "id": user.user_id,
-        "username": user.username
+        "username": user.username,
     }

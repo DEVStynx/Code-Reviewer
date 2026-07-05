@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-from app.service.ai_service import setupOpenAIAPI
+from app.service.ai_service import setup_openai_api
 from app.database.db import db
 from app.auth.jwt import jwt
 
@@ -16,7 +16,7 @@ def create_app():
     jwt.init_app(app)
     db.init_app(app)
 
-    setupOpenAIAPI(app)
+    setup_openai_api(app)
 
     from .api.routes import index_bp, api_bp
     app.register_blueprint(index_bp)

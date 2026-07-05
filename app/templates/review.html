@@ -17,6 +17,17 @@ Review
         <div class="review-card-body">
             <pre class="code-block-textarea prettyprint linenums" readonly>{{ file["content"] }}</pre>
 
+            {% if file["reviews"]["summary"] %}
+            <div class="alert alert-warning mt-3 mb-3">
+                <strong>Review-Antwort:</strong>
+                <pre class="mb-0 mt-2">{{ file["reviews"]["summary"] }}</pre>
+            </div>
+            {% elif not file["reviews"]["findings"] and not file["reviews"]["style"] %}
+            <div class="alert alert-success mt-3 mb-3">
+                No issues found for this file.
+            </div>
+            {% endif %}
+
             {% for finding in file["reviews"]["findings"] %}
             <div class="finding-card finding-{{ finding["severity"] }}">
             <div class="finding-title">{{ finding["issue"] }} #{{ finding["line"] }}</div>
