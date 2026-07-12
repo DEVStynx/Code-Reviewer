@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const dragIcon = document.getElementById("drag-drop-image");
     const fileView = document.getElementById("file-view");
     const uploadIcon = document.getElementById("upload-icon");
+    const loadingSpinner = document.getElementById("loading-spinner");
     
     uploadIcon.addEventListener("click", function (e) {
         inputFile.click();
@@ -14,7 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
         dropArea.classList.add("dragover");
         dragIcon.classList.remove("d-none");
     });
+
     document.getElementById("submit-btn").addEventListener("click", function (e) {
+        // Disable site behaviour and block other uploads
+        loadingSpinner.style.display = "block";
+        //document.getElementById("submit-btn").disabled = true;
         console.log(inputFile.files);
     })
 

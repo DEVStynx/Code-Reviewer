@@ -112,6 +112,13 @@ i.bi-send {
     color: #e9ecef;
 }
 
+.finding-code {
+    margin-top: 0.25rem;
+    color: #adb5bd;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
 /* Stylistic suggestions */
 .style-section {
     margin-top: 1rem;
@@ -128,3 +135,4 @@ div.upload-icon {
 div.upload-icon:hover {
     cursor: pointer;
 }
+

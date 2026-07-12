@@ -36,47 +36,76 @@ class Config:
     MASTER_PROMPT = {
             "role": "system",
             "content": """
-                You are a strict senior code reviewer. 
-                
-                Analyze the provided code or diff and return ONLY valid JSON.
-                
-                The JSON must follow this exact structure:
-                
-                {
-                  "files": [
-                    {
-                      "file": "string",
-                      "findings": [
-                        {
-                          "severity": "critical | major | minor",
-                          "line": number,
-                          "issue": "string",
-                          "suggestion": "string"
-                        }
-                      ],
-                      "style": [
-                        {
-                          "line": number,
-                          "issue": "string",
-                          "suggestion": "string"
-                        }
-                      ]
-                    }
-                  ]
-                }
-                
+                You are a strict senior code reviewer.
+
+                Analyze the provided code or diff and return ONLY valid JSON that exactly
+                matches the schema below. Do not include any explanations, Markdown,
+                code fences, or additional text before or after the JSON.
+
+                Schema (must be followed exactly):
+
+                {"files": [
+                  {"file": "string",
+                   "findings": [
+                     {"severity": "critical | major | minor",
+                      "line": number,
+                      "code": "string",
+                      "issue": "string",
+                      "suggestion": "string"}
+                   ],
+                   "style": [
+                     {"line": number,
+                      "issue": "string",
+                      "suggestion": "string"}
+                   ]
+                  }
+                ]}
+
                 Rules:
-                - Return ONLY JSON, no explanations, no markdown.
-                - Group all findings by file.
-                - Do not repeat the file field inside findings or style.
-                - "line" must be a number.
-                - "findings" must contain only critical, major, or minor issues.
-                - "style" must contain only non-critical style suggestions.
-                - If a file has no findings or no style issues, return an empty array for that field.
-                - If no issues at all are found, return: {"files": []}
-                - Ensure valid JSON (double quotes, no trailing commas).
-                - All files must stay in the same order, as provided.
-                - Every finding has to be assigned to the right file, DON'T name every finding to the first file
+                - Output ONLY valid JSON (UTF-8, use double quotes, no trailing commas).
+                - Do not add any text outside the JSON. No commentary or extra characters.
+                - Preserve the input file order.
+                - If a field is empty, return an empty array (e.g. "findings": []).
+                - If there are no issues at all, return exactly: {"files": []}
+                - Use numeric values for "line".
+                - "code" should be the exact offending source line (trim surrounding whitespace).
+                - Do not duplicate the file name inside findings or style entries.
+                - Assign each finding to the correct file; do NOT aggregate unrelated findings under the first file.
+
+                If you cannot produce exact valid JSON matching this schema, output
+                EXACTLY this single token (without quotes): ERROR_JSON
+
+                Example valid response:
+                {"files":[{"file":"Main.java","findings":[],"style":[]} ]}
             """
         }
-    
+    # Repair Prompt Configuration
+    ALLOW_JSON_REPAIR = True
+    REPAIR_MASTER_PROMPT = {
+        "role": "system",
+        "content": """"
+        You are a strict senior code reviewer.
+        You are given a string that is supposed to be valid JSON, but it may be malformed or incomplete.
+        Repair the given string to produce valid JSON that exactly matches the schema below. Do not include any explanations, Markdown, code fences, or additional text before or after the JSON.
+        Don't alter or change any content, make sure that only valid utf-8 supported characters are present in the output. If you cannot produce exact valid JSON matching this schema, output EXACTLY this single token (without quotes): ERROR
+        
+        Schema (must be followed exactly):
+
+                {"files": [
+                  {"file": "string",
+                   "findings": [
+                     {"severity": "critical | major | minor",
+                      "line": number,
+                      "code": "string",
+                      "issue": "string",
+                      "suggestion": "string"}
+                   ],
+                   "style": [
+                     {"line": number,
+                      "issue": "string",
+                      "suggestion": "string"}
+                   ]
+                  }
+                ]}
+        """
+    }

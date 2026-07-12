@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 OPENAI_CLIENT: Optional[OpenAI] = None
 MODEL: str = "gpt-3.1-mini"
 MASTER_PROMPT: Optional[Dict[str, Any]] = None
+REPAIR_MASTER_PROMPT: Optional[Dict[str, Any]] = None
+ALLOW_JSON_REPAIR: bool = True
 
 MAX_FILE_SIZE_BYTES = 250_000
 MAX_FILE_CHARS = 50_000
@@ -43,15 +45,17 @@ def setup_openai_api(app: Flask) -> None:
       - MASTER_PROMPT (required)
     """
 
-    global OPENAI_CLIENT, MODEL, MASTER_PROMPT, MAX_FILE_SIZE_BYTES, MAX_FILE_CHARS, MAX_FILE_CHARS
+    global OPENAI_CLIENT, MODEL, MASTER_PROMPT, REPAIR_MASTER_PROMPT, MAX_FILE_SIZE_BYTES, MAX_FILE_CHARS, ALLOW_JSON_REPAIR
 
     with app.app_context():
         key = app.config.get("OPENAI_API_KEY")
         base_url = app.config.get("OPENAI_BASE_URL")
         MODEL = app.config.get("OPENAI_API_MODEL") or MODEL
         MASTER_PROMPT = app.config.get("MASTER_PROMPT")
+        REPAIR_MASTER_PROMPT = app.config.get("REPAIR_MASTER_PROMPT")
         MAX_FILE_SIZE_BYTES = app.config.get("MAX_FILE_SIZE_BYTES")
         MAX_FILE_CHARS = app.config.get("MAX_FILE_CHARS")
+        ALLOW_JSON_REPAIR = app.config.get("ALLOW_JSON_REPAIR", True)
 
     if not isvalidAPIKey(key):
         raise ValueError("Invalid or missing OpenAI API key; set OPENAI_API_KEY in configuration.")
@@ -81,6 +85,46 @@ def _create_response(payload: str) -> Any:
     request = [MASTER_PROMPT, {"role": "user", "content": payload}]
     return OPENAI_CLIENT.responses.create(model=MODEL, input=cast(Any, request))
 
+
+def _repair_json_llm(raw_text: str) -> Optional[Any]:
+    """Attempt a single LLM call to extract or repair JSON from raw_text.
+
+    Returns a parsed dict or list on success, otherwise None.
+    """
+    if OPENAI_CLIENT is None:
+        logger.debug("OpenAI client not initialized; skipping JSON repair")
+        return None
+    if REPAIR_MASTER_PROMPT is None:
+        logger.debug("No REPAIR_MASTER_PROMPT configured; skipping JSON repair")
+        return None
+
+    try:
+        request = [REPAIR_MASTER_PROMPT, {"role": "user", "content": raw_text}]
+        response = OPENAI_CLIENT.responses.create(model=MODEL, input=cast(Any, request))
+        output_text = getattr(response, "output_text", None)
+        candidate = output_text if output_text is not None else str(response)
+
+        # Try direct parse
+        try:
+            return loads(candidate)
+        except Exception:
+            # Try extracting a JSON block from the repaired candidate
+            extracted = _extract_json_block(candidate)
+            if extracted:
+                try:
+                    return loads(extracted)
+                except Exception:
+                    logger.debug("Repair attempt produced non-JSON output")
+                    return None
+            logger.debug("Repair attempt did not yield JSON")
+            return None
+
+    except RateLimitError as exc:
+        logger.warning("Rate limit during JSON repair: %s", exc)
+        return None
+    except Exception as exc:
+        logger.exception("JSON repair failed: %s", exc)
+        return None
 
 def _extract_json_block(text: str) -> Optional[str]:
     """Try to extract a JSON object or array from free-form model output."""
@@ -134,6 +178,17 @@ def _normalize_review_output(review: Any) -> Dict[str, Any]:
 
         if isinstance(parsed, list):
             return {"files": parsed}
+
+        # Attempt a single LLM repair call if enabled and we have raw text
+        if ALLOW_JSON_REPAIR and isinstance(review, str):
+            try:
+                repaired = _repair_json_llm(review)
+                if isinstance(repaired, dict):
+                    return repaired
+                if isinstance(repaired, list):
+                    return {"files": repaired}
+            except Exception:
+                logger.debug("JSON repair attempt failed or raised an exception")
 
         return {"files": [], "summary": review}
 
@@ -274,6 +329,7 @@ def review_code_frontend(files: Optional[Dict[str, Any]] = None, code: Optional[
     if not out and summary:
         out.append({"file": "review", "content": "", "reviews": {"findings": [], "style": [], "summary": summary}})
 
+    # Append Query to Db
     query = Query()
     query.review_json = out
     query.user_id = get_current_user().user_id
