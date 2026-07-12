@@ -30,10 +30,11 @@ Review
 
             {% for finding in file["reviews"]["findings"] %}
             <div class="finding-card finding-{{ finding["severity"] }}">
-            <div class="finding-title">{{ finding["issue"] }} #{{ finding["line"] }}</div>
-            <div class="finding-subtitle">{{ finding["severity"] | capitalize }}</div>
-            <div class="finding-text">{{ finding["suggestion"] }}</div>
-        </div>
+                <div class="finding-title">{{ finding["issue"] }} #{{ finding["line"] }}</div>
+                <div class="finding-subtitle">{{ finding["severity"] | capitalize }}</div>
+                <div class="finding-text">{{ finding["suggestion"] }}</div>
+                <div class="finding-code">{{ finding["code"] }}</div>
+            </div>
         {% endfor %}
 
         {% if file["reviews"]["style"] %}
