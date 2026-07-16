@@ -1,5 +1,6 @@
-from flask import Blueprint, request, render_template, redirect
+from flask import Blueprint, request, render_template, redirect, make_response
 from flask_jwt_extended import jwt_required, get_current_user, verify_jwt_in_request
+from flask_jwt_extended import unset_jwt_cookies
 
 from app.service.user_service import register_user, login_user
 from app.service.ai_service import review_code, review_code_frontend
@@ -54,6 +55,18 @@ def review():
 def queries():
     return get_reviews()
 
+@index_bp.route("/settings", methods=["GET"])
+@jwt_required(locations=["cookies"])
+def settings():
+    return render_template("settings.html")
+
+
+@index_bp.route("/logout", methods=["POST"])
+@jwt_required(locations=["cookies"])
+def logout():
+    response = make_response(redirect("/login"))
+    unset_jwt_cookies(response)
+    return response
 
 @api_bp.route("/review", methods=["POST"])
 @jwt_required()

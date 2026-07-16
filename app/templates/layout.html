@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="de" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- http://getbootstrap.com/docs/5.3/ -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
@@ -16,26 +17,25 @@
 </head>
 <body>
     <!-- https://getbootstrap.com/docs/5.3/components/navbar/-->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <img src="/static/icon.ico">
-            <a class="navbar-brand" href="/">Code-Reviewer</a>
+    <nav class="navbar navbar-expand-lg navbar-modern sticky-top">
+        <div class="container-fluid px-3 px-lg-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img src="/static/icon.ico" alt="Code Reviewer" class="brand-icon">
+                <span>Code-Reviewer</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 center">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-2 nav-pills-modern">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Review Code</a>
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="/">Review Code</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/queries">Queries</a>
+                        <a class="nav-link {% if request.path == '/queries' %}active{% endif %}" href="/queries">Queries</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/register">Register</a>
+                        <a class="nav-link {% if request.path == '/settings' %}active{% endif %}" href="/settings">Settings</a>
                     </li>
                 </ul>
             </div>
