@@ -47,23 +47,39 @@ def index():
 @index_bp.route("/review", methods=["POST"])
 @jwt_required(locations=["cookies"])
 def review():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
     files = review_code_frontend(files=request.files, code=request.form.get("code"))
     return render_template("review.html", files=files)
 
 @index_bp.route("/queries", methods=["GET"])
 @jwt_required(locations=["cookies"])
 def queries():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
     return get_reviews()
 
 @index_bp.route("/settings", methods=["GET"])
 @jwt_required(locations=["cookies"])
 def settings():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
     return render_template("settings.html")
 
 
 @index_bp.route("/logout", methods=["POST"])
 @jwt_required(locations=["cookies"])
 def logout():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
     response = make_response(redirect("/login"))
     unset_jwt_cookies(response)
     return response
