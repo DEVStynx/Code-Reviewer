@@ -4,6 +4,7 @@ from app.database.db import db
 from datetime import datetime, timezone
 
 from app.models.query import Query
+from app.models.user_settings import UserSettings
 
 
 class User(db.Model):
@@ -23,3 +24,9 @@ class User(db.Model):
 
     def get_user_queries(self) -> List[Query]:
         return Query.query.filter_by(user_id=self.user_id).all()
+
+    def get_user_settings(self)-> List[UserSettings]:
+        return UserSettings.query.filter_by(user_id=self.user_id).all()
+
+
+    

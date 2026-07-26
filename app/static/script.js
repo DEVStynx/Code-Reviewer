@@ -100,12 +100,37 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const settingValuesElement = document.getElementById("setting-values");
+    let serverSettings = {};
+
+    if (settingValuesElement?.textContent) {
+        try {
+            serverSettings = JSON.parse(settingValuesElement.textContent);
+        } catch (error) {
+            console.error("Failed to parse server settings:", error);
+        }
+    }
+
+    const updateSettingInDatabase = async function (key, value) {
+        const response = await fetch(`/settings/${encodeURIComponent(key)}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ value: String(value) })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to save setting "${key}" (${response.status})`);
+        }
+    };
+
     const themeButtons = document.querySelectorAll("[data-theme-choice]");
     const themePreview = document.getElementById("theme-preview");
 
     if (themeButtons.length > 0) {
-        const storedTheme = localStorage.getItem("codeReviewerTheme") || "dark";
         const root = document.documentElement;
+        let activeTheme = serverSettings.theme || localStorage.getItem("codeReviewerTheme") || "dark";
 
         const applyTheme = function (theme) {
             const resolvedTheme = theme === "auto"
@@ -123,13 +148,29 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
 
-        applyTheme(storedTheme);
+        applyTheme(activeTheme);
 
         themeButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const theme = button.dataset.themeChoice;
-                localStorage.setItem("codeReviewerTheme", theme);
-                applyTheme(theme);
+            button.addEventListener("click", async function () {
+                const nextTheme = button.dataset.themeChoice;
+                if (!nextTheme || nextTheme === activeTheme) {
+                    return;
+                }
+
+                const previousTheme = activeTheme;
+                activeTheme = nextTheme;
+                localStorage.setItem("codeReviewerTheme", nextTheme);
+                applyTheme(nextTheme);
+
+                try {
+                    await updateSettingInDatabase("theme", nextTheme);
+                } catch (error) {
+                    activeTheme = previousTheme;
+                    localStorage.setItem("codeReviewerTheme", previousTheme);
+                    applyTheme(previousTheme);
+                    console.error(error);
+                    window.alert("Theme konnte nicht gespeichert werden.");
+                }
             });
         });
     }
@@ -138,13 +179,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (promptReviewCheck) {
         const storedPromptReview = localStorage.getItem("codeReviewerPromptReview");
+        const serverPromptReview = serverSettings["prompt-check"];
 
-        if (storedPromptReview !== null) {
+        if (serverPromptReview !== undefined) {
+            promptReviewCheck.checked = String(serverPromptReview).toLowerCase() === "true";
+        } else if (storedPromptReview !== null) {
             promptReviewCheck.checked = storedPromptReview === "true";
         }
 
-        promptReviewCheck.addEventListener("change", function () {
-            localStorage.setItem("codeReviewerPromptReview", String(promptReviewCheck.checked));
+        promptReviewCheck.addEventListener("change", async function () {
+            const nextValue = promptReviewCheck.checked;
+            const previousValue = !nextValue;
+            localStorage.setItem("codeReviewerPromptReview", String(nextValue));
+
+            try {
+                await updateSettingInDatabase("prompt-check", nextValue);
+            } catch (error) {
+                promptReviewCheck.checked = previousValue;
+                localStorage.setItem("codeReviewerPromptReview", String(previousValue));
+                console.error(error);
+                window.alert("Prompt-Check konnte nicht gespeichert werden.");
+            }
         });
     }
 });
