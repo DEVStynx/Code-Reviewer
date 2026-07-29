@@ -1,0 +1,226 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Settings
+{% endblock %}
+
+{% block head %}
+    <script src="/static/script.js" defer></script>
+{% endblock %}
+
+{% block body %}
+    <div class="settings-page">
+        <div class="container py-5">
+            <div class="settings-shell mx-auto">
+                <div class="settings-hero card border-0 shadow-lg mb-4">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-center justify-content-between">
+                            <div>
+                                <span class="settings-kicker">Account & Experience</span>
+                                <h1 class="display-6 fw-semibold mb-3">Settings</h1>
+                                <p class="lead mb-0 settings-hero-copy">
+                                    Customize your theme, account connections, and review behavior without losing focus
+                                    from the review flow.
+                                </p>
+                            </div>
+                            <div class="settings-status-card">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="status-dot"></span>
+                                    <span class="text-uppercase small fw-semibold letter-spacing">Active</span>
+                                </div>
+                                <div class="fw-semibold">Secure, Fast Review Experience</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-tabs card border-0 shadow-lg">
+                    <div class="card-body p-0">
+                        <ul class="nav nav-tabs settings-nav-tabs px-3 px-md-4 pt-3" id="settingsTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="appearance-tab" data-bs-toggle="tab"
+                                        data-bs-target="#appearance-pane" type="button" role="tab"
+                                        aria-controls="appearance-pane" aria-selected="true">
+                                    <i class="bi bi-palette me-2"></i>Appearance
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="account-tab" data-bs-toggle="tab"
+                                        data-bs-target="#account-pane" type="button" role="tab"
+                                        aria-controls="account-pane" aria-selected="false">
+                                    <i class="bi bi-person-circle me-2"></i>Account
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="integrations-tab" data-bs-toggle="tab"
+                                        data-bs-target="#integrations-pane" type="button" role="tab"
+                                        aria-controls="integrations-pane" aria-selected="false">
+                                    <i class="bi bi-github me-2"></i>Integrations
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content p-3 p-md-4" id="settingsTabContent">
+                            <div class="tab-pane fade show active" id="appearance-pane" role="tabpanel"
+                                 aria-labelledby="appearance-tab" tabindex="0">
+                                <div class="row g-4">
+                                    <div class="col-12 col-xl-7">
+                                        <div class="settings-card h-100">
+                                            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+                                                <div>
+                                                    <div class="section-label">Theme</div>
+                                                    <h2 class="h4 mb-2">Choose the Visual Mode</h2>
+                                                    <p class="text-body-secondary mb-0">
+                                                        You can switch between dark, light, or system-controlled look.
+                                                    </p>
+                                                </div>
+                                                <span class="preview-chip" id="theme-preview">Dark</span>
+                                            </div>
+
+                                            <div class="btn-group theme-choice-group w-100" role="group"
+                                                 aria-label="Theme Auswahl">
+                                                <button type="button"
+                                                        class="btn btn-outline-primary theme-choice active"
+                                                        data-theme-choice="dark">
+                                                    <i class="bi bi-moon-stars me-2"></i>Dark
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary theme-choice"
+                                                        data-theme-choice="light">
+                                                    <i class="bi bi-sun me-2"></i>Light
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary theme-choice"
+                                                        data-theme-choice="auto">
+                                                    <i class="bi bi-display me-2"></i>Auto
+                                                </button>
+                                            </div>
+
+                                            <div class="theme-preview-grid mt-4">
+                                                <div class="mini-card mini-card-primary">
+                                                    <span class="mini-label">Code Review</span>
+                                                    <strong>Modern UI</strong>
+                                                </div>
+                                                <div class="mini-card mini-card-muted">
+                                                    <span class="mini-label">Focus</span>
+                                                    <strong>Tabbed Settings</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-5">
+                                        <div class="settings-card h-100 settings-summary-card">
+                                            <div class="section-label">Preview</div>
+                                            <h2 class="h5 mb-3">Headline</h2>
+                                            <ul class="settings-list list-unstyled mb-0">
+                                                <li><i class="bi bi-check2-circle me-2"></i>
+                                                    <p>Normal paragraph</p></li>
+                                                <li>
+                                                    <button class="btn btn-outline-primary">Button</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="account-pane" role="tabpanel" aria-labelledby="account-tab"
+                                 tabindex="0">
+                                <div class="row g-4 align-items-stretch">
+                                    <div class="col-12 col-lg-7">
+                                        <div class="settings-card h-100">
+                                            <div class="section-label">Sitzung</div>
+                                            <h2 class="h4 mb-2">Logout</h2>
+                                            <p class="text-body-secondary mb-4">
+                                                End your current session securely. Logging
+                                            </p>
+                                            <form action="/logout" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-danger btn-lg">
+                                                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-5">
+                                        <div class="settings-card h-100 settings-accent-card">
+                                            <div class="section-label">Security</div>
+                                            <h2 class="h5 mb-3">Notice</h2>
+                                            <p class="mb-0 text-body-secondary">
+                                                Log out inorder to ensure your account's security, especially when using
+                                                shared or public devices. Always remember to log out after your session
+                                                to protect your personal information and maintain the integrity of your
+                                                account.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="integrations-pane" role="tabpanel"
+                                 aria-labelledby="integrations-tab" tabindex="0">
+                                <div class="row g-4">
+                                    <div class="col-12 col-lg-7">
+                                        <div class="settings-card h-100">
+                                            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                                                <div>
+                                                    <div class="section-label">GitHub</div>
+                                                    <h2 class="h4 mb-2">Connect Account</h2>
+                                                    <p class="text-body-secondary mb-0">
+                                                        Connect your GitHub account to link reviews and future
+                                                        extensions to your profile.
+                                                    </p>
+                                                </div>
+                                                <span class="badge rounded-pill text-bg-secondary px-3 py-2">UI prepared</span>
+                                            </div>
+
+                                            <div class="integration-card mb-3">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="integration-icon">
+                                                        <i class="bi bi-github"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold">GitHub Account</div>
+                                                        <div class="text-body-secondary small">Not connected yet</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-3 align-items-end">
+                                                <div class="col-12 col-md-7">
+                                                    <label for="github-username" class="form-label">GitHub
+                                                        Username</label>
+                                                    <input type="text" class="form-control form-control-lg"
+                                                           id="github-username" placeholder="...">
+                                                </div>
+                                                <div class="col-12 col-md-5 d-grid">
+                                                    <button type="button" class="btn btn-primary btn-lg">
+                                                        <i class="bi bi-link-45deg me-2"></i>Connect
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-5">
+                                        <div class="settings-card h-100">
+                                            <div class="section-label">Review</div>
+                                            <h2 class="h5 mb-3">Prompt-Check</h2>
+                                            <div class="form-check form-switch settings-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                       id="prompt-review-check" checked>
+                                                <label class="form-check-label" for="prompt-review-check">
+                                                    Review Prompt before Submitting
+                                                </label>
+                                            </div>
+                                            <p class="text-body-secondary mb-0">
+                                                Ensures a fast and clean review process by correcting JSON syntax.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script id="setting-values" type="application/json">{{ setting_values | tojson }}</script>
+{% endblock %}

@@ -1,9 +1,12 @@
-from flask import Blueprint, request, render_template, redirect
+from flask import Blueprint, request, render_template, redirect, make_response, jsonify, Response
 from flask_jwt_extended import jwt_required, get_current_user, verify_jwt_in_request
+from flask_jwt_extended import unset_jwt_cookies
 
 from app.service.user_service import register_user, login_user
 from app.service.ai_service import review_code, review_code_frontend
 from app.service.query_service import get_reviews
+from app.service.settings_service import get_user_settings, set_user_setting
+
 index_bp = Blueprint("index", __name__, url_prefix="")
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -16,8 +19,8 @@ def login_site():
 @index_bp.route("/login", methods=["POST"])
 def login():
     return login_user(
-        username=request.form.get("username", None),
-        password=request.form.get("password", None),
+        username=request.form.get("username", ""),
+        password=request.form.get("password", ""),
     )
 
 
@@ -46,14 +49,54 @@ def index():
 @index_bp.route("/review", methods=["POST"])
 @jwt_required(locations=["cookies"])
 def review():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
     files = review_code_frontend(files=request.files, code=request.form.get("code"))
     return render_template("review.html", files=files)
 
 @index_bp.route("/queries", methods=["GET"])
 @jwt_required(locations=["cookies"])
 def queries():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
     return get_reviews()
 
+@index_bp.route("/settings", methods=["GET"])
+@jwt_required(locations=["cookies"])
+def settings():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
+    return get_user_settings()
+
+@index_bp.route("/settings/<string:key>", methods=["POST"])
+@jwt_required(locations=["cookies"])
+def updateSetting(key):
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
+    data = request.get_json() or {}
+    value = data.get("value")
+    if value is None:
+        return Response("Missing value",status=400)
+    return set_user_setting(key, value)
+
+@index_bp.route("/logout", methods=["POST"])
+@jwt_required(locations=["cookies"])
+def logout():
+    try:
+        verify_jwt_in_request(locations=["cookies"])
+    except Exception:
+        return redirect("/login")
+    response = make_response(redirect("/login"))
+    unset_jwt_cookies(response)
+    return response
 
 @api_bp.route("/review", methods=["POST"])
 @jwt_required()

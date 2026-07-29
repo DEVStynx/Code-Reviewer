@@ -1,48 +1,75 @@
 {% extends "layout.html" %}
 
-{% block title%}
-Login
+{% block title %}
+    Login
 {% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}
 
 {% block body %}
-<div class="d-flex justify-content-center align-items-center" style="min-height:70vh;">
-    <div class="review-card" style="max-width:480px; width:100%;">
-        <div class="review-card-header">Login</div>
-        <div class="review-card-body">
-            <form action="/login" method="post">
-                <div class="mb-3">
-                    <label for="username" class="form-label visually-hidden">Username</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+    <div class="page-shell d-flex align-items-center">
+        <div class="container">
+            <div class="row g-4 align-items-stretch justify-content-center">
+                <div class="col-12 col-lg-5">
+                    <div class="auth-illustration h-100 accent-shell p-4 p-lg-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="section-kicker">Welcome Back</span>
+                            <h1 class="display-6 fw-semibold mb-3">Login</h1>
+                            <p class="hero-copy mb-4">
+                                Review your code with ease and save your findings for future reference.
+                            </p>
+                        </div>
+                        <div class="d-grid gap-3">
+                            <div class="glass-badge"><i class="bi bi-lightning-charge"></i> Fast, Clear, Focused</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label visually-hidden">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                <div class="col-12 col-lg-5">
+                    <div class="auth-card h-100">
+                        <div class="section-kicker mb-2">Account</div>
+                        <h2 class="h4 mb-3">Login to Your Account</h2>
+
+                        <form action="/login" method="post" class="form-panel mb-3">
+                            <div class="mb-3">
+                                <label for="username" class="form-label visually-hidden">Username</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <input type="text" id="username" name="username" class="form-control"
+                                           placeholder="Username" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label visually-hidden">Password</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                           placeholder="Password" required>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg"><i
+                                        class="bi bi-box-arrow-in-right me-2"></i>Login
+                                </button>
+                                <a href="/register" class="btn btn-outline-light btn-lg">No Account? Register</a>
+                            </div>
+                        </form>
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                <div class="d-grid gap-2">
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} mb-0">{{ message }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                     </div>
                 </div>
-
-                <div class="d-flex flex-column align-items-center">
-                    <button type="submit" class="btn btn-primary btn-lg w-75"><i class="bi bi-box-arrow-in-right me-2"></i> Login</button>
-                    <a href="/register" class="text-muted mt-2">Don't have an account? Register</a>
-                </div>
-            </form>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            <div class="error-message">
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
             </div>
-            {% endwith %}
         </div>
     </div>
-</div>
 {% endblock %}

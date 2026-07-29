@@ -1,55 +1,55 @@
 {% extends "layout.html" %}
 
-{% block title%}
-Review
+{% block title %}
+    Review
 {% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?skin=sunburst"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?skin=sunburst"></script>
 {% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    {% for file in files %}
-    <div class="review-card">
-        <div class="review-card-header">{{ file["file"] }}</div>
-        <div class="review-card-body">
-            <pre class="code-block-textarea prettyprint linenums" readonly>{{ file["content"] }}</pre>
+    <div class="container mt-4">
+        {% for file in files %}
+            <div class="review-card">
+                <div class="review-card-header">{{ file["file"] }}</div>
+                <div class="review-card-body">
+                    <pre class="code-block-textarea prettyprint linenums" readonly>{{ file["content"] }}</pre>
 
-            {% if file["reviews"]["summary"] %}
-            <div class="alert alert-warning mt-3 mb-3">
-                <strong>Review-Antwort:</strong>
-                <pre class="mb-0 mt-2">{{ file["reviews"]["summary"] }}</pre>
-            </div>
-            {% elif not file["reviews"]["findings"] and not file["reviews"]["style"] %}
-            <div class="alert alert-success mt-3 mb-3">
-                No issues found for this file.
-            </div>
-            {% endif %}
+                    {% if file["reviews"]["summary"] %}
+                        <div class="alert alert-warning mt-3 mb-3">
+                            <strong>Review-Antwort:</strong>
+                            <pre class="mb-0 mt-2">{{ file["reviews"]["summary"] }}</pre>
+                        </div>
+                    {% elif not file["reviews"]["findings"] and not file["reviews"]["style"] %}
+                        <div class="alert alert-success mt-3 mb-3">
+                            No issues found for this file.
+                        </div>
+                    {% endif %}
 
-            {% for finding in file["reviews"]["findings"] %}
-            <div class="finding-card finding-{{ finding["severity"] }}">
-                <div class="finding-title">{{ finding["issue"] }} #{{ finding["line"] }}</div>
-                <div class="finding-subtitle">{{ finding["severity"] | capitalize }}</div>
-                <div class="finding-text">{{ finding["suggestion"] }}</div>
-                <div class="finding-code">{{ finding["code"] }}</div>
+                    {% for finding in file["reviews"]["findings"] %}
+                        <div class="finding-card finding-{{ finding["severity"] }}">
+                            <div class="finding-title">{{ finding["issue"] }} #{{ finding["line"] }}</div>
+                            <div class="finding-subtitle">{{ finding["severity"] | capitalize }}</div>
+                            <div class="finding-text">{{ finding["suggestion"] }}</div>
+                            <div class="finding-code">{{ finding["code"] }}</div>
+                        </div>
+                    {% endfor %}
+
+                    {% if file["reviews"]["style"] %}
+                        <div class="style-section">
+                            <strong>Stylistic suggestions:</strong>
+                            {% for style in file["reviews"]["style"] %}
+                                <div class="finding-card finding-minor">
+                                    <div class="finding-title">{{ style["issue"] }} #{{ style["line"] }}</div>
+                                    <div class="finding-text">{{ style["suggestion"] }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         {% endfor %}
-
-        {% if file["reviews"]["style"] %}
-        <div class="style-section">
-            <strong>Stylistic suggestions:</strong>
-            {% for style in file["reviews"]["style"] %}
-            <div class="finding-card finding-minor">
-                <div class="finding-title">{{ style["issue"] }} #{{ style["line"] }}</div>
-                <div class="finding-text">{{ style["suggestion"] }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
     </div>
-</div>
-{% endfor %}
-</div>
 {% endblock %}

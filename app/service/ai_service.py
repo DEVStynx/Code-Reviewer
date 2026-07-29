@@ -17,12 +17,12 @@ from openai import OpenAI, RateLimitError
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
+from app.service.settings_service import get_user_setting
 from app.database.db import db
 from app.util.OpenAIUtil import isvalidAPIKey
 from app.models.query import Query
 
 logger = logging.getLogger(__name__)
-
 
 # Module-level OpenAI state (initialized via setup_openai_api)
 OPENAI_CLIENT: Optional[OpenAI] = None
@@ -36,15 +36,6 @@ MAX_FILE_CHARS = 50_000
 
 
 def setup_openai_api(app: Flask) -> None:
-    """Initialize the global OpenAI client using values from Flask config.
-
-    Expected config keys:
-      - OPENAI_API_KEY
-      - OPENAI_BASE_URL (optional)
-      - OPENAI_API_MODEL (optional)
-      - MASTER_PROMPT (required)
-    """
-
     global OPENAI_CLIENT, MODEL, MASTER_PROMPT, REPAIR_MASTER_PROMPT, MAX_FILE_SIZE_BYTES, MAX_FILE_CHARS, ALLOW_JSON_REPAIR
 
     with app.app_context():
@@ -126,6 +117,7 @@ def _repair_json_llm(raw_text: str) -> Optional[Any]:
         logger.exception("JSON repair failed: %s", exc)
         return None
 
+
 def _extract_json_block(text: str) -> Optional[str]:
     """Try to extract a JSON object or array from free-form model output."""
 
@@ -134,12 +126,12 @@ def _extract_json_block(text: str) -> Optional[str]:
     object_start = text.find("{")
     object_end = text.rfind("}")
     if object_start != -1 and object_end > object_start:
-        candidates.append(text[object_start : object_end + 1])
+        candidates.append(text[object_start: object_end + 1])
 
     array_start = text.find("[")
     array_end = text.rfind("]")
     if array_start != -1 and array_end > array_start:
-        candidates.append(text[array_start : array_end + 1])
+        candidates.append(text[array_start: array_end + 1])
 
     for candidate in candidates:
         try:
@@ -179,17 +171,30 @@ def _normalize_review_output(review: Any) -> Dict[str, Any]:
         if isinstance(parsed, list):
             return {"files": parsed}
 
+        # Fetch user settings regarding repair call
+        json_repair_user_str = get_user_setting(get_current_user(), "prompt-check")
+        user_json_repair: bool
+        if json_repair_user_str is None or json_repair_user_str.lower() == "false":
+            user_json_repair = False
+        elif json_repair_user_str.lower() == "true":
+            user_json_repair = True
+        else:
+            user_json_repair = False
+
         # Attempt a single LLM repair call if enabled and we have raw text
-        if ALLOW_JSON_REPAIR and isinstance(review, str):
+        if ALLOW_JSON_REPAIR and isinstance(review, str) and user_json_repair:
+            print("repaired prompt")
             try:
                 repaired = _repair_json_llm(review)
                 if isinstance(repaired, dict):
                     return repaired
                 if isinstance(repaired, list):
                     return {"files": repaired}
-            except Exception:
-                logger.debug("JSON repair attempt failed or raised an exception")
-
+            except Exception as e:
+                logger.debug("JSON repair attempt failed or raised an exception: ")
+                logger.debug(f"Exception: {e}")
+        else:
+            print("didn't repair prompt!")
         return {"files": [], "summary": review}
 
     return {"files": []}
@@ -264,12 +269,15 @@ def _build_input(files: Optional[Any] = None, code: Optional[str] = None) -> Lis
     data.extend(uploads)
 
     return data
+
+
 def _append_query_db(query: Query):
     """Append a query to the database."""
     print(f"query: {query.user_id} {query.review_json}")
     db.session.add(query)
     db.session.commit()
     pass
+
 
 def review_code(files: Optional[Dict[str, Any]] = None, code: Optional[str] = None, api: bool = True):
     """Request a code review from OpenAI.
@@ -314,14 +322,16 @@ def review_code_frontend(files: Optional[Dict[str, Any]] = None, code: Optional[
 
     out: List[Dict[str, Any]] = []
     for idx, infile in enumerate(input_files):
-        review_entry = reviewed_files[idx] if idx < len(reviewed_files) and isinstance(reviewed_files[idx], dict) else {}
+        review_entry = reviewed_files[idx] if idx < len(reviewed_files) and isinstance(reviewed_files[idx],
+                                                                                       dict) else {}
         normalized_review = {
             "findings": review_entry.get("findings", []),
             "style": review_entry.get("style", []),
             "summary": review_entry.get("summary", "") or (summary if len(input_files) == 1 else ""),
         }
 
-        if not normalized_review["findings"] and not normalized_review["style"] and not normalized_review["summary"] and summary:
+        if not normalized_review["findings"] and not normalized_review["style"] and not normalized_review[
+            "summary"] and summary:
             normalized_review["summary"] = summary
 
         out.append({"file": infile["name"], "content": infile["content"], "reviews": normalized_review})
