@@ -1,6 +1,6 @@
 # Code-Reviewer
 
-An AI-powered code review web application built with Flask and OpenAI. Paste or upload your code files and receive structured feedback categorized by severity — including critical bugs, major issues, minor problems, and style suggestions.
+An AI-powered code review web application built with Flask and OpenAI. Register an account, paste or upload your code files, and receive structured feedback categorized by severity — including critical bugs, major issues, minor problems, and style suggestions. Track review history and customize your review settings.
 
 ---
 
@@ -11,54 +11,37 @@ Code-Reviewer sends your code to an OpenAI language model configured as a strict
 - **Critical / Major / Minor** — bugs, logic errors, security issues, and functional problems.
 - **Style** — non-critical suggestions for readability and conventions.
 
-Results are displayed in a clean web UI per file, or returned as JSON via the REST API.
+Results are displayed in a clean web UI per file, accessible via REST API with JWT authentication, and stored in your review history for future reference.
 
 ---
 
 ## Features
 
+- **User Authentication** — secure registration and login with JWT tokens stored in cookies.
 - **Web UI** — paste code directly into a text area or drag-and-drop / upload multiple files.
-- **REST API** — integrate code review into your own toolchain via a simple HTTP endpoint.
+- **Review History** — access past reviews and organize your code review workflow.
+- **User Settings** — customize your code review preferences and configuration.
+- **REST API** — integrate code review into your toolchain via authenticated HTTP endpoints.
 - **Multi-file support** — upload several files at once and receive a review for each.
 - **Configurable model** — point the app at any OpenAI-compatible endpoint (e.g. Azure OpenAI, a local proxy) and choose any model.
+- **GitHub linking support** — coming soon!
 
 ---
 
-## Infrastructure
-
-```
-Code-Reviewer/
-├── main.py                  # Application entry point
-├── requirements.txt         # Python dependencies
-├── .env                     # Environment variables (not committed)
-└── app/
-    ├── __init__.py          # Flask application factory
-    ├── config.py            # Configuration – reads .env variables
-    ├── api/
-    │   └── routes.py        # URL routes (web UI + REST API)
-    ├── service/
-    │   └── ai_service.py    # OpenAI integration & review logic
-    ├── util/
-    │   └── OpenAIUtil.py    # Helper utilities (API key validation)
-    ├── templates/           # Jinja2 HTML templates
-    │   ├── layout.html
-    │   ├── index.html       # Upload / paste page
-    │   └── review.html      # Results page
-    └── static/              # CSS, JS, favicon
-        ├── style.css
-        ├── script.js
-        └── icon.ico
-```
-
-### Tech stack
+## Tech stack
 
 | Layer | Technology |
 |---|---|
 | Web framework | Flask 3 |
 | AI backend | OpenAI Python SDK (`openai`) |
+| Database | SQLAlchemy + SQLite |
+| Migrations | Alembic / Flask-Migrate |
+| Authentication | Flask-JWT-Extended (JWT cookies) |
+| Password hashing | Argon2 |
 | Templating | Jinja2 |
 | Frontend | Bootstrap 5 + Bootstrap Icons |
 | Config | `python-dotenv` |
+| Data validation | Pydantic |
 
 ---
 
@@ -68,6 +51,7 @@ Code-Reviewer/
 
 - Python 3.10+
 - An OpenAI API key (or a compatible API endpoint)
+- SQLite (included with Python)
 
 ### Installation
 
@@ -86,11 +70,24 @@ pip install -r requirements.txt
 # 4. Create your .env file (see section below)
 cp .env.example .env       # then fill in your values
 
-# 5. Start the development server
+# 5. Initialize the database
+flask db upgrade
+
+# 6. Start the development server
 python main.py
 ```
 
 The application will be available at `http://127.0.0.1:5000`.
+
+---
+
+## First Time Setup
+
+On first launch, you will be redirected to the login page. Create a new account by clicking **Register**, then log in with your credentials. Your account includes:
+
+- A personal review history linked to your account
+- Customizable settings per user
+- Secure access to the review API via JWT tokens
 
 ---
 
@@ -119,12 +116,24 @@ OPENAI_API_MODEL=gpt-4o
 
 ### Web UI
 
-1. Open `http://127.0.0.1:5000` in your browser.
-2. Either **paste code** into the text area or **drag-and-drop / click** to upload one or more source files.
-3. Click **Send**.
-4. The review page displays each file with its findings and style suggestions.
+#### Registration & Login
+
+1. Navigate to `http://127.0.0.1:5000` in your browser.
+2. You will be redirected to the **Login** page.
+3. Click **Register** to create a new account with a username and password.
+4. Log in with your credentials.
+
+#### Code Review
+
+1. Once logged in, paste code into the text area or drag-and-drop / click to upload one or more source files.
+2. Click **Send**.
+3. The review page displays each file with its findings and style suggestions.
+4. Access your **Review History** from the nav menu to revisit past reviews.
+5. Adjust **Settings** to customize your review preferences.
 
 ### REST API
+
+**Authentication:** All API endpoints require JWT authentication via Bearer token or cookie.
 
 **Endpoint:** `POST /api/review`
 
@@ -137,15 +146,19 @@ OPENAI_API_MODEL=gpt-4o
 
 You can supply `code`, one or more `file` fields, or both.
 
-**Example with `curl`:**
+**Example with `curl` (using JWT Bearer token):**
 
 ```bash
-# Review code passed as a string
+# First, obtain a JWT token (or use the cookie from login)
+# Then review code with the token
+
 curl -X POST http://127.0.0.1:5000/api/review \
+  -H "Authorization: Bearer <your-jwt-token>" \
   -F 'code=def add(a, b): return a - b'
 
-# Review an uploaded file
+# Or upload a file
 curl -X POST http://127.0.0.1:5000/api/review \
+  -H "Authorization: Bearer <your-jwt-token>" \
   -F 'file=@path/to/your/script.py'
 ```
 
@@ -160,6 +173,7 @@ curl -X POST http://127.0.0.1:5000/api/review \
         {
           "severity": "major",
           "line": 1,
+          "code": "def add(a, b): return a - b",
           "issue": "Incorrect subtraction instead of addition",
           "suggestion": "Change `a - b` to `a + b` to match the function name."
         }
@@ -167,6 +181,24 @@ curl -X POST http://127.0.0.1:5000/api/review \
       "style": []
     }
   ]
+}
+```
+
+### User Endpoints
+
+**Get current user info:**
+
+```bash
+curl -X GET http://127.0.0.1:5000/api/me \
+  -H "Authorization: Bearer <your-jwt-token>"
+```
+
+**Response:**
+
+```json
+{
+  "id": "user-id",
+  "username": "your-username"
 }
 ```
 
