@@ -109,4 +109,3 @@ def login_user(username: str, password: str):
     response = redirect("/")
     set_access_cookies(response, access_token)
     return response
-

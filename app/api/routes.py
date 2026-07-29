@@ -19,8 +19,8 @@ def login_site():
 @index_bp.route("/login", methods=["POST"])
 def login():
     return login_user(
-        username=request.form.get("username", None),
-        password=request.form.get("password", None),
+        username=request.form.get("username", ""),
+        password=request.form.get("password", ""),
     )
 
 

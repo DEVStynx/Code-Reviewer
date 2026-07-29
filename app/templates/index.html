@@ -1,95 +1,99 @@
 {% extends "layout.html" %}
 
-{% block title%}
-Home
+{% block title %}
+    Home
 {% endblock %}
 
 {% block head %}
-<script src="/static/script.js" defer></script>
+    <script src="/static/script.js" defer></script>
 {% endblock %}
 
 {% block body %}
-<div class="page-shell">
-    <div class="container">
-        <div class="hero-card mb-4">
-            <div class="card-body p-4 p-lg-5">
-                <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-center justify-content-between">
-                    <div>
-                        <span class="section-kicker">Review Flow</span>
-                        <h1 class="display-6 fw-semibold mb-3">Paste or Upload Your Code</h1>
-                        <p class="lead mb-0 hero-copy">
-                            Start a quick review process with direct paste or file upload and keep the focus on the code.
-                        </p>
-                    </div>
-                    <div class="glass-badge">
-                        <i class="bi bi-shield-check"></i>
-                        Secure Review Workflow
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4 align-items-stretch">
-            <div class="col-12 col-xl-8">
-                <div class="upload-card h-100">
-                    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+    <div class="page-shell">
+        <div class="container">
+            <div class="hero-card mb-4">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-center justify-content-between">
                         <div>
-                            <div class="section-kicker mb-2">Input</div>
-                            <h2 class="h4 mb-2">Paste or Drop Your Code</h2>
-                            <p class="text-body-secondary mb-0">
-                                Supported are Drag & Drop, direct paste and upload for multiple files.
+                            <span class="section-kicker">Review Flow</span>
+                            <h1 class="display-6 fw-semibold mb-3">Paste or Upload Your Code</h1>
+                            <p class="lead mb-0 hero-copy">
+                                Start a quick review process with direct paste or file upload and keep the focus on the
+                                code.
                             </p>
                         </div>
-                        <button type="button" class="btn btn-outline-light" id="upload-icon">
-                            <i class="bi bi-upload me-2"></i>Select File
-                        </button>
+                        <div class="glass-badge">
+                            <i class="bi bi-shield-check"></i>
+                            Secure Review Workflow
+                        </div>
                     </div>
-
-                    <form method="POST" action="/review" enctype="multipart/form-data" id="code-form">
-                        <div id="drop-area" class="upload-drop-zone position-relative p-3 p-md-4 mb-4">
-                            <textarea class="form-control code-input-text border-0" name="code" rows="15" placeholder="Paste your code here..."></textarea>
-
-                            <div id="drag-drop-image" class="upload-placeholder d-none position-absolute top-50 start-50 translate-middle text-center">
-                                <i class="bi bi-upload display-1 text-primary"></i>
-                                <div class="mt-2 fw-semibold">Drop files here</div>
-                            </div>
-
-                            <input type="file" id="input-file" multiple class="d-none" name="file">
-                        </div>
-
-                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-                            <div id="file-view" class="file-pill-list"></div>
-                            <div class="d-flex align-items-center gap-3 ms-md-auto">
-                                <button type="submit" class="btn btn-primary btn-lg submit-btn" id="submit-btn">
-                                    <i class="bi bi-send me-2"></i>Send
-                                </button>
-                                <div class="spinner-border text-primary" role="status" id="loading-spinner" style="display: none;">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
 
-            <div class="col-12 col-xl-4">
-                <div class="surface-card h-100">
-                    <div class="section-kicker mb-2">Quick News</div>
-                    <h2 class="h5 mb-3">Optimized for fast reviews</h2>
-                    <ul class="feature-list mb-4">
-                        <li><i class="bi bi-check2-circle"></i><span>Drag & Drop for Uploading Files</span></li>
-                        <li><i class="bi bi-check2-circle"></i><span>Fast Review Process</span></li>
-                    </ul>
+            <div class="row g-4 align-items-stretch">
+                <div class="col-12 col-xl-8">
+                    <div class="upload-card h-100">
+                        <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+                            <div>
+                                <div class="section-kicker mb-2">Input</div>
+                                <h2 class="h4 mb-2">Paste or Drop Your Code</h2>
+                                <p class="text-body-secondary mb-0">
+                                    Supported are Drag & Drop, direct paste and upload for multiple files.
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-outline-light" id="upload-icon">
+                                <i class="bi bi-upload me-2"></i>Select File
+                            </button>
+                        </div>
 
-                    <div class="metric-card accent-shell mb-3">
-                        <div class="section-kicker mb-2">Focus</div>
-                        <div class="metric-value">On things that matter</div>
-                        <div class="text-body-secondary">Don't spend time on unnecessary details.</div>
+                        <form method="POST" action="/review" enctype="multipart/form-data" id="code-form">
+                            <div id="drop-area" class="upload-drop-zone position-relative p-3 p-md-4 mb-4">
+                                <textarea class="form-control code-input-text border-0" name="code" rows="15"
+                                          placeholder="Paste your code here..."></textarea>
+
+                                <div id="drag-drop-image"
+                                     class="upload-placeholder d-none position-absolute top-50 start-50 translate-middle text-center">
+                                    <i class="bi bi-upload display-1 text-primary"></i>
+                                    <div class="mt-2 fw-semibold">Drop files here</div>
+                                </div>
+
+                                <input type="file" id="input-file" multiple class="d-none" name="file">
+                            </div>
+
+                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                                <div id="file-view" class="file-pill-list"></div>
+                                <div class="d-flex align-items-center gap-3 ms-md-auto">
+                                    <button type="submit" class="btn btn-primary btn-lg submit-btn" id="submit-btn">
+                                        <i class="bi bi-send me-2"></i>Send
+                                    </button>
+                                    <div class="spinner-border text-primary" role="status" id="loading-spinner"
+                                         style="display: none;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
+                </div>
 
+                <div class="col-12 col-xl-4">
+                    <div class="surface-card h-100">
+                        <div class="section-kicker mb-2">Quick News</div>
+                        <h2 class="h5 mb-3">Optimized for fast reviews</h2>
+                        <ul class="feature-list mb-4">
+                            <li><i class="bi bi-check2-circle"></i><span>Drag & Drop for Uploading Files</span></li>
+                            <li><i class="bi bi-check2-circle"></i><span>Fast Review Process</span></li>
+                        </ul>
+
+                        <div class="metric-card accent-shell mb-3">
+                            <div class="section-kicker mb-2">Focus</div>
+                            <div class="metric-value">On things that matter</div>
+                            <div class="text-body-secondary">Don't spend time on unnecessary details.</div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

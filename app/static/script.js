@@ -1,3 +1,25 @@
+const root = document.documentElement;
+const settingValuesElement = document.getElementById("setting-values");
+let serverSettings = {};
+
+if (settingValuesElement?.textContent) {
+    try {
+        serverSettings = JSON.parse(settingValuesElement.textContent);
+    } catch (error) {
+        console.error("Failed to parse server settings:", error);
+    }
+}
+
+let activeTheme = serverSettings.theme || localStorage.getItem("codeReviewerTheme") || "dark";
+const applyThemeGlobal = function (theme) {
+    const resolvedTheme = theme === "auto"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : theme;
+    root.setAttribute("data-bs-theme", resolvedTheme);
+};
+
+applyThemeGlobal(activeTheme);
+
 document.addEventListener("DOMContentLoaded", function () {
     const dropArea = document.getElementById("drop-area");
     const inputFile = document.getElementById("input-file");
@@ -117,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ value: String(value) })
+            body: JSON.stringify({value: String(value)})
         });
 
         if (!response.ok) {
@@ -129,9 +151,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const themePreview = document.getElementById("theme-preview");
 
     if (themeButtons.length > 0) {
-        const root = document.documentElement;
-        let activeTheme = serverSettings.theme || localStorage.getItem("codeReviewerTheme") || "dark";
-
         const applyTheme = function (theme) {
             const resolvedTheme = theme === "auto"
                 ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")

@@ -1,6 +1,7 @@
 from app.database import db
 from datetime import datetime
 
+
 class UserSettings(db.Model):
     __tablename__ = "user_settings"
 

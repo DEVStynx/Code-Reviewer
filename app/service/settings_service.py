@@ -3,25 +3,26 @@ from typing import List
 
 from flask import redirect, render_template, make_response
 from flask_jwt_extended import get_current_user
-from openai.types.responses import Response
-
 from app.database import db
 
+from app.models.user import User
 from app.models.user_settings import UserSettings
 
 ALLOWED_SETTINGS = ["theme", "prompt-check"]
+
 
 def get_user_settings():
     current_user = get_current_user()
     if not current_user:
         return redirect("/login")
 
-    settings : List[UserSettings]
+    settings: List[UserSettings]
     settings = current_user.get_user_settings()
     setting_values = {setting.key: setting.value for setting in settings}
     return render_template("settings.html", settings=settings, setting_values=setting_values)
 
-def set_user_setting(key : str, value: str):
+
+def set_user_setting(key: str, value: str):
     current_user = get_current_user()
     if not current_user:
         r = make_response()
@@ -57,3 +58,11 @@ def set_user_setting(key : str, value: str):
     r = make_response()
     r.status_code = 200
     return r
+
+
+def get_user_setting(user: User, key: str) -> str | None:
+    settings = user.get_user_settings()
+    for setting in settings:
+        if setting.key == key.lower():
+            return setting.value
+    return None

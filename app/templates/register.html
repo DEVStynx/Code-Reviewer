@@ -1,72 +1,78 @@
 {% extends "layout.html" %}
 
-{% block title%}
-Register
+{% block title %}
+    Register
 {% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block body %}
-<div class="page-shell d-flex align-items-center">
-    <div class="container">
-        <div class="row g-4 align-items-stretch justify-content-center">
-            <div class="col-12 col-lg-5 order-lg-2">
-                <div class="auth-illustration h-100 accent-shell p-4 p-lg-5 d-flex flex-column justify-content-between">
-                    <div>
-                        <span class="section-kicker">New Account</span>
-                        <h1 class="display-6 fw-semibold mb-3">Register</h1>
-                        <p class="hero-copy mb-4">
-                            Create an account to save reviews and prepare for future GitHub linking flows.
-                        </p>
-                    </div>
-                    <div class="d-grid gap-3">
-                        <div class="glass-badge"><i class="bi bi-person-check"></i> Fast Onboarding</div>
-                        <div class="glass-badge"><i class="bi bi-github"></i> Prepared for Future GitHub Linking Flows</div>
+    <div class="page-shell d-flex align-items-center">
+        <div class="container">
+            <div class="row g-4 align-items-stretch justify-content-center">
+                <div class="col-12 col-lg-5 order-lg-2">
+                    <div class="auth-illustration h-100 accent-shell p-4 p-lg-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="section-kicker">New Account</span>
+                            <h1 class="display-6 fw-semibold mb-3">Register</h1>
+                            <p class="hero-copy mb-4">
+                                Create an account to save reviews and prepare for future GitHub linking flows.
+                            </p>
+                        </div>
+                        <div class="d-grid gap-3">
+                            <div class="glass-badge"><i class="bi bi-person-check"></i> Fast Onboarding</div>
+                            <div class="glass-badge"><i class="bi bi-github"></i> Prepared for Future GitHub Linking
+                                Flows
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-12 col-lg-5 order-lg-1">
-                <div class="auth-card h-100">
-                    <div class="section-kicker mb-2">Account</div>
-                    <h2 class="h4 mb-3">Create New Account</h2>
+                <div class="col-12 col-lg-5 order-lg-1">
+                    <div class="auth-card h-100">
+                        <div class="section-kicker mb-2">Account</div>
+                        <h2 class="h4 mb-3">Create New Account</h2>
 
-                    <form action="/register" method="post" class="form-panel mb-3">
-                        <div class="mb-3">
-                            <label for="username" class="form-label visually-hidden">Username</label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                        <form action="/register" method="post" class="form-panel mb-3">
+                            <div class="mb-3">
+                                <label for="username" class="form-label visually-hidden">Username</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                    <input type="text" id="username" name="username" class="form-control"
+                                           placeholder="Username" required>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-4">
-                            <label for="password" class="form-label visually-hidden">Password</label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                            <div class="mb-4">
+                                <label for="password" class="form-label visually-hidden">Password</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                           placeholder="Password" required>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="d-grid gap-3">
-                            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-door-open me-2"></i>Register</button>
-                            <a href="/login" class="btn btn-outline-light btn-lg">Bereits registriert? Login</a>
-                        </div>
-                    </form>
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg"><i
+                                        class="bi bi-door-open me-2"></i>Register
+                                </button>
+                                <a href="/login" class="btn btn-outline-light btn-lg">Bereits registriert? Login</a>
+                            </div>
+                        </form>
 
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    <div class="d-grid gap-2">
-                        {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} mb-0">{{ message }}</div>
-                        {% endfor %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                <div class="d-grid gap-2">
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} mb-0">{{ message }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                     </div>
-                    {% endif %}
-                    {% endwith %}
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
